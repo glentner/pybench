@@ -13,7 +13,7 @@
 
 # type annotations
 from __future__ import annotations
-from typing import List, Callable, Any
+from typing import List, Callable, Any, TypeVar
 
 # standard libraries
 import socket
@@ -27,7 +27,7 @@ from abc import ABC, abstractmethod, abstractproperty
 import psutil
 
 # public interface
-__all__ = ['Benchmark', 'BenchmarkError', 'CPUResource', 'MemoryResource', ]
+__all__ = ['Benchmark', 'BenchmarkError', 'CPUResource', 'MemoryResource', 'coerce_type', ]
 
 
 HOSTNAME = socket.gethostname()
@@ -63,7 +63,7 @@ class Benchmark(ABC):
         self.args = list(args)
         self.repeat = int(repeat)
         self.spacing = float(spacing)
-        self.setup(*args)
+        self.prepare()
 
     @abstractproperty
     def name(self) -> str:
@@ -73,17 +73,26 @@ class Benchmark(ABC):
         """Initialize state or member data before run."""
         self.args = list(args)
 
+    def prepare(self) -> None:
+        """Wraps call to setup."""
+        try:
+            self.setup(*self.args)
+        except Exception as error:
+            raise BenchmarkError(f'setup for \'{self.name}\': {error}') from error
+
     @abstractmethod
     def task(self) -> None:
         """The task to be executed."""
 
     def run(self) -> None:
         """Run benchmark some number of times."""
-        for count in range(self.repeat):
+        for i in range(1, self.repeat + 1):
+            self.prepare()
+            self.log(f'[{i}] start')
             time = default_timer()
             self.task()
             elapsed = default_timer() - time
-            self.log(f'[{count+1}] {elapsed}')
+            self.log(f'[{i}] {elapsed}')
             sleep(self.spacing)
 
 
@@ -142,3 +151,24 @@ class MemoryResource(Resource):
 
     def gather_telemetry(self) -> List[float]:
         return [psutil.virtual_memory().percent / 100, ]
+
+
+T = TypeVar('T', int, float, bool, type(None), str)
+def coerce_type(value: str) -> T:
+    """Passively coerce `value` to available type if possible."""
+    try:
+        return int(value)
+    except ValueError:
+        pass
+    try:
+        return float(value)
+    except ValueError:
+        pass
+    if value.lower() in ('none', 'null'):
+        return None
+    if value.lower() == 'true':
+        return True
+    if value.lower() == 'false':
+        return False
+    else:
+        return value

@@ -13,9 +13,10 @@
 
 # type annotations
 from __future__ import annotations
-from typing import List, Optional, Callable, Type
+from typing import List, Optional, Callable, Type, Any
 
 # standard libs
+import re
 import sys
 import time
 import logging
@@ -28,7 +29,7 @@ from cmdkit.cli import Interface
 # internal libs
 from .__meta__ import (__appname__, __version__, __authors__, __description__,
                        __contact__, __license__, __copyright__, __keywords__, __website__)
-from .core import CPUResource, MemoryResource, Benchmark, BenchmarkError
+from .core import CPUResource, MemoryResource, Benchmark, BenchmarkError, coerce_type
 from . import benchmark
 
 # public interface
@@ -41,29 +42,22 @@ Application.log_critical = log.critical
 Application.log_exception = log.exception
 
 
-benchmark_map = {
-    'random': benchmark.Random,
-    'matmul': benchmark.MatMul,
-}
-
-
-benchmark_output = '\n'.join([f'{key}: {value.__doc__}'
-                              for key, value in benchmark_map.items()])
-
-
 def log_exception(exc: Exception, status: int) -> int:
     """Print exception and return exit status."""
     log.critical(f'error: {exc}')
     return status
 
 
-list_desc = "List benchmarks."
+list_desc = "List available benchmarks."
 list_usage = f"""\
-usage: pybench list [-h] [-l]
+usage: pybench list [-h] [-l] [PATTERN]
 {list_desc}\
 """
 list_help = f"""\
 {list_usage}
+
+arguments:
+PATTERN                  Regular expression filter.
 
 options:
 -l, --long               Show details on benchmark.
@@ -77,18 +71,22 @@ ANSI_BLUE = '\033[34m'
 
 
 class ListApp(Application):
-    """List benchmarks."""
+    """List available benchmarks."""
 
     interface = Interface('pybench list', list_usage, list_help)
     ALLOW_NOARGS = True
+
+    pattern: re.Pattern = re.compile(f'.*')
+    interface.add_argument('pattern', nargs='?', type=re.compile, default=pattern)
 
     long_mode: bool = False
     interface.add_argument('-l', '--long', action='store_true', dest='long_mode')
 
     def run(self) -> None:
         """List benchmarks."""
-        for name, benchmark_type in benchmark_map.items():
-            self.output(name, benchmark_type)
+        for name, benchmark_type in benchmark.listing.items():
+            if self.pattern.match(name):
+                self.output(name, benchmark_type)
 
     @property
     def output(self) -> Callable[[str, Type[Benchmark]], None]:
@@ -96,13 +94,13 @@ class ListApp(Application):
 
     @staticmethod
     def basic_output(name: str, benchmark_type: Type[Benchmark]) -> None:
-        name = f'{name:<10}' if not sys.stdout.isatty() else f'{ANSI_BLUE}{name:<10}{ANSI_RESET}'
-        print(f'{name} {benchmark_type.__doc__}')
+        name = f'{name:<17}' if not sys.stdout.isatty() else f'{ANSI_BLUE}{name:<18}{ANSI_RESET}'
+        print(f'{name}   {benchmark_type.__doc__}')
 
     @staticmethod
     def detailed_output(name: str, benchmark_type: Type[Benchmark]) -> None:
-        name = name if not sys.stdout.isatty() else f'{ANSI_BLUE}{name}{ANSI_RESET}'
-        print(f'{name} {benchmark_type.annotation:<16} {benchmark_type.__doc__}')
+        name = f'{name:<18}' if not sys.stdout.isatty() else f'{ANSI_BLUE}{name:<18}{ANSI_RESET}'
+        print(f'{name} {benchmark_type.annotation:>27}   {benchmark_type.__doc__}')
 
 
 run_desc = "Run benchmark."
@@ -118,7 +116,7 @@ NAME                     Name of benchmark to run.
 ARGS...                  Positional arguments passed to benchmark.
 
 options:
--n, --iterations  COUNT  Number of times to run benchmark. (default: 1)
+-n, --repeat      COUNT  Number of times to run benchmark. (default: 1)
 -s, --spacing     SEC    Time (seconds) between runs. (default: 1)
 -c, --monitor-cpu        Collect telemetry on CPU usage.
 -m, --monitor-memory     Collect telemetry on memory usage.
@@ -133,13 +131,13 @@ class RunApp(Application):
     interface = Interface('pybench run', run_usage, run_help)
 
     name: str = None
-    interface.add_argument('name', choices=list(benchmark_map))
+    interface.add_argument('name', choices=list(benchmark.listing))
 
-    args: List[str] = None
-    interface.add_argument('args', nargs='*')
+    args: List[Any] = None
+    interface.add_argument('args', nargs='*', type=coerce_type, default=[])
 
-    n_iterations: int = 1
-    interface.add_argument('-n', '--iterations', type=int, default=n_iterations, dest='n_iterations')
+    repeat: int = 1
+    interface.add_argument('-n', '--repeat', type=int, default=repeat)
 
     spacing: float = 1.0
     interface.add_argument('-s', '--spacing', type=float, default=spacing)
@@ -174,11 +172,11 @@ class RunApp(Application):
 
     def run_benchmark(self) -> None:
         """Setup and initiate benchmark."""
-        benchmark_type = benchmark_map[self.name]
-        benchmark_type(self.n_iterations, self.spacing, *self.args).run()
+        benchmark_type = benchmark.listing.get(self.name)
+        benchmark_type(self.repeat, self.spacing, *self.args).run()
 
 
-graph_desc = "Graph benchmark data."
+graph_desc = "Graph benchmark log data."
 graph_usage = f"""\
 usage: pybench graph [-h] FILE [--output FILE]
 {graph_desc}\
@@ -213,8 +211,8 @@ app_help = f"""\
 {app_usage}
 
 commands:
-list                     {list_desc}
 run                      {run_desc}
+list                     {list_desc}
 graph                    {graph_desc}
 
 options:
@@ -235,8 +233,8 @@ class NPBenchApp(ApplicationGroup):
 
     command = None
     commands = {
-        'list': ListApp,
         'run': RunApp,
+        'list': ListApp,
         'graph': GraphApp,
     }
 
