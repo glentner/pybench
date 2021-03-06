@@ -1,0 +1,23 @@
+[tool.poetry]
+name = "pybench"
+version = "0.0.1-rc1"
+description = "A simple Python benchmark tool."
+authors = ["Geoffrey Lentner <glentner@purdue.edu>"]
+license = "Apache License 2.0"
+
+[tool.poetry.dependencies]
+python = "^3.8"
+cmdkit = "^2.2.3"
+psutil = "^5.8.0"
+numpy = "^1.20.1"
+scipy = "^1.6.1"
+pandas = "^1.2.3"
+matplotlib = "^3.3.4"
+seaborn = "^0.11.1"
+
+[tool.poetry.dev-dependencies]
+ipython = "^7.21.0"
+
+[build-system]
+requires = ["poetry-core>=1.0.0", "setuptools", "wheel"]
+build-backend = "poetry.core.masonry.api"
