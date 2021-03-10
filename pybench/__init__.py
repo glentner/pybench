@@ -13,7 +13,7 @@
 
 # type annotations
 from __future__ import annotations
-from typing import List, Optional, Callable, Type, Any
+from typing import List, Dict, Optional, Callable, Type, Any
 
 # standard libs
 import re
@@ -21,15 +21,18 @@ import sys
 import time
 import logging
 import functools
+from platform import python_version, python_implementation
 
 # external libs
 from cmdkit.app import Application, ApplicationGroup, exit_status
 from cmdkit.cli import Interface
+import numpy as np
 
 # internal libs
 from .__meta__ import (__appname__, __version__, __authors__, __description__,
                        __contact__, __license__, __copyright__, __keywords__, __website__)
 from .core import CPUResource, MemoryResource, Benchmark, BenchmarkError, coerce_type
+from .graph import LogRecord, LogData, PerfChart
 from . import benchmark
 
 # public interface
@@ -195,12 +198,55 @@ class GraphApp(Application):
 
     interface = Interface('pybench graph', graph_usage, graph_help)
 
-    outpath: str = None
-    interface.add_argument('-o', '--output', dest='outpath')
+    source: str = '-'
+    interface.add_argument('source')
+
+    outpath: Optional[str] = None
+    interface.add_argument('-o', '--output', dest='outpath', default=outpath)
+
+    label_benchmark: Optional[str] = None
+    interface.add_argument('--label-benchmark', default=label_benchmark)
+
+    label_build: Optional[str] = None
+    interface.add_argument('--label-build', default=label_build)
+
+    label_version: Optional[str] = None
+    interface.add_argument('--label-version', default=label_version)
+
+    data: LogData
+    graph: PerfChart
 
     def run(self) -> None:
         """List benchmarks."""
-        log.error('Not implemented.')
+        self.load_data()
+        self.graph = PerfChart(self.data, **self.get_labels())
+        self.graph.draw()
+        self.graph.save(self.outpath)
+
+    def load_data(self) -> None:
+        """Load data from source."""
+        if self.source == '-':
+            self.data = LogData.from_io(sys.stdin)
+        else:
+            self.data = LogData.from_local(self.source)
+
+    def get_labels(self) -> Dict[str, str]:
+        """Derive labels from data or from explicit assignment."""
+        return {'label_benchmark': self.label_benchmark or self.data.benchmark_name,
+                'label_build': self.label_build or self.get_python_info(),
+                'label_version': self.label_version or self.get_numpy_info()}
+
+    @staticmethod
+    def get_python_info() -> str:
+        """Load Python build information."""
+        implementation = python_implementation()
+        version = python_version()
+        return f'{implementation} {version}'
+
+    @staticmethod
+    def get_numpy_info() -> str:
+        """Load NumPy build information."""
+        return f'NumPy {np.__version__}'
 
 
 app_usage = f"""\
