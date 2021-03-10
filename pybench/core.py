@@ -16,6 +16,7 @@ from __future__ import annotations
 from typing import List, Callable, Any, TypeVar
 
 # standard libraries
+import sys
 import socket
 import logging
 from time import sleep
@@ -39,7 +40,7 @@ class LogRecord(logging.LogRecord):
 
 
 logging.setLogRecordFactory(LogRecord)
-logging.basicConfig(level=logging.INFO,
+logging.basicConfig(level=logging.INFO, stream=sys.stdout,
                     format='%(asctime)s.%(msecs)03d %(hostname)s %(name)s %(message)s',
                     datefmt='%Y-%m-%d %H:%M:%S')
 
@@ -51,10 +52,10 @@ class BenchmarkError(Exception):
 class Benchmark(ABC):
     """Boilerplate for running a benchmark."""
 
-    log: Callable[[str], None] = None
-    args: List[Any] = None
-    repeat: int = None
-    spacing: float = None
+    log: Callable[[str], None]
+    args: List[Any]
+    repeat: int
+    spacing: float
     annotation: str = '()'
 
     def __init__(self, repeat: int = 1, spacing: float = 1.0, *args) -> None:
@@ -99,7 +100,7 @@ class Benchmark(ABC):
 class Resource(Thread):
     """Monitor resource and log usage."""
 
-    log: Callable[[str], None] = None
+    log: Callable[[str], None]
     resolution: float = 1.0
 
     def __init__(self, resolution: float = resolution) -> None:
@@ -141,7 +142,8 @@ class CPUResource(Resource):
     name = 'cpu'
 
     def gather_telemetry(self) -> List[float]:
-        return psutil.cpu_percent(interval=self.resolution, percpu=True)
+        values = psutil.cpu_percent(interval=self.resolution, percpu=True)
+        return [value / 100 for value in list(values)]
 
 
 class MemoryResource(Resource):

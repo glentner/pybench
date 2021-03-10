@@ -1,7 +1,7 @@
 [tool.poetry]
 name = "pybench"
-version = "0.0.1-rc1"
-description = "A simple Python benchmark tool."
+version = "0.0.1"
+description = "Simple performance benchmarks for Python."
 authors = ["Geoffrey Lentner <glentner@purdue.edu>"]
 license = "Apache License 2.0"
 
