@@ -30,7 +30,7 @@ with open('pybench/__meta__.py', mode='r') as source:
 
 
 # core dependencies
-DEPS = ['psutil', 'numpy', 'scipy', 'pandas', 'matplotlib', 'seaborn', ]
+DEPS = ['cmdkit', 'psutil', 'numpy', 'scipy', 'pandas', 'matplotlib', 'seaborn', ]
 
 
 setup(
