@@ -12,7 +12,7 @@
 
 
 __appname__     = 'pybench'
-__version__     = '0.0.1'
+__version__     = '0.0.2'
 __authors__     = 'Geoffrey Lentner'
 __contact__     = 'glentner@purdue.edu'
 __license__     = 'Apache License 2.0'
