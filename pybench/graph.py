@@ -19,6 +19,7 @@ from typing import List, Tuple, Union, IO
 from dataclasses import dataclass
 from functools import cached_property
 from collections import defaultdict
+from psutil import virtual_memory
 
 # external libs
 import matplotlib.pyplot as plot
@@ -29,6 +30,12 @@ import numpy as np
 
 # public interface
 __all__ = ['LogRecord', 'LogData', 'PerfChart', ]
+
+
+# total memory in gigabytes
+total_memory = virtual_memory().total / 1024**3
+if total_memory == int(total_memory):
+    total_memory = int(total_memory)
 
 
 @dataclass
@@ -195,15 +202,15 @@ class PerfChart:
     def draw(self) -> None:
         """Render chart."""
 
-        mem_format = dict(color='firebrick', lw=1.0, alpha=1, zorder=50)
-        self.data.mem_data.plot(y='value', ax=self.ax, legend=False, **mem_format)
-
-        cpu_format = dict(color='steelblue', lw=1.0, alpha=1, zorder=60)
+        cpu_format = dict(color='steelblue', lw=0.50, alpha=0.5, zorder=40)
         for core, group in self.data.cpu_data.groupby('core_id'):
             group.plot(y='value', ax=self.ax, legend=False, **cpu_format)
 
+        mem_format = dict(color='firebrick', lw=1.0, alpha=1, zorder=50)
+        self.data.mem_data.plot(y='value', ax=self.ax, legend=False, **mem_format)
+
         # plot benchmark run sequences
-        fill_format = dict(color='slategray', alpha=0.25, zorder=100)
+        fill_format = dict(color='slategray', alpha=0.50, zorder=100)
         for run_id, group in self.data.benchmark_data.groupby('run_id'):
             start, stop = group.index
             plot.fill_between([start, stop], 2 * [0, ], 2 * [1, ], **fill_format)
@@ -254,12 +261,12 @@ class PerfChart:
         legend.text(0.08, 0.60, f' CPU ({self.data.num_cores})', fontsize=10, fontweight='semibold')
 
         mem_label_x = np.linspace(0.00, 0.05, 20)
-        mem_label_y = 0.30 + 0.10 * np.random.rand(20)
+        mem_label_y = 0.28 + 0.10 * np.random.rand(20)
         legend.plot(mem_label_x, mem_label_y, **mem_format)
-        legend.text(0.08, 0.30, ' Memory', fontsize=10, fontweight='semibold')
+        legend.text(0.08, 0.28, f' Memory ({total_memory} GB)', fontsize=10, fontweight='semibold')
 
-        legend.fill_between([0.35, 0.40], [0.56, 0.56], [0.80, 0.80], **fill_format)
-        legend.text(0.43, 0.61, ' Run Period', fontsize=10, fontweight='semibold')
+        legend.fill_between([0.45, 0.50], [0.56, 0.56], [0.80, 0.80], **fill_format)
+        legend.text(0.52, 0.61, ' Run Period', fontsize=10, fontweight='semibold')
 
     def save(self, *args, **kwargs) -> None:
         """Save figure to local file system."""
