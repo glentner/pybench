@@ -1,0 +1,19 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+cmdkit = "*"
+psutil = "*"
+numpy = "*"
+scipy = "*"
+pandas = "*"
+matplotlib = "*"
+seaborn = "*"
+pybench = {editable = true, path = "."}
+
+[dev-packages]
+
+[requires]
+python_version = "3.9"
