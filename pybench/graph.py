@@ -33,9 +33,9 @@ __all__ = ['LogRecord', 'LogData', 'PerfChart', ]
 
 
 # total memory in gigabytes
-total_memory = virtual_memory().total / 1024**3
-if total_memory == int(total_memory):
-    total_memory = int(total_memory)
+TOTAL_MEM = virtual_memory().total / 1024 ** 3
+if TOTAL_MEM != int(TOTAL_MEM):
+    TOTAL_MEM = int(TOTAL_MEM)
 
 
 @dataclass
@@ -260,7 +260,7 @@ class PerfChart:
         mem_label_x = np.linspace(0.00, 0.05, 20)
         mem_label_y = 0.28 + 0.10 * np.random.rand(20)
         legend.plot(mem_label_x, mem_label_y, **mem_format)
-        legend.text(0.08, 0.28, f' Memory ({total_memory} GB)', fontsize=10, fontweight='semibold')
+        legend.text(0.08, 0.28, f' Memory ({TOTAL_MEM} GB)', fontsize=10, fontweight='semibold')
 
         legend.fill_between([0.45, 0.50], [0.56, 0.56], [0.80, 0.80], **fill_format)
         legend.text(0.52, 0.61, ' Run Period', fontsize=10, fontweight='semibold')

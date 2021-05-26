@@ -36,7 +36,7 @@ from .graph import LogRecord, LogData, PerfChart
 from . import benchmark
 
 # public interface
-__all__ = ['NPBenchApp', 'main', ]
+__all__ = ['PyBenchApp', 'main', ]
 
 
 # inject logger setup into command-line framework
@@ -270,7 +270,7 @@ Documentation and issue tracking at:
 """
 
 
-class NPBenchApp(ApplicationGroup):
+class PyBenchApp(ApplicationGroup):
     """Run benchmark."""
 
     interface = Interface('pybench', app_usage, app_help)
@@ -287,4 +287,4 @@ class NPBenchApp(ApplicationGroup):
 
 def main() -> int:
     """Entry-point for console application."""
-    return NPBenchApp.main(sys.argv[1:])
+    return PyBenchApp.main(sys.argv[1:])
