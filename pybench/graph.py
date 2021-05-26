@@ -1,12 +1,5 @@
-# This program is free software: you can redistribute it and/or modify it under the
-# terms of the Apache License (v2.0) as published by the Apache Software Foundation.
-#
-# This program is distributed in the hope that it will be useful, but WITHOUT ANY
-# WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
-# PARTICULAR PURPOSE. See the Apache License for more details.
-#
-# You should have received a copy of the Apache License along with this program.
-# If not, see <https://www.apache.org/licenses/LICENSE-2.0>.
+# SPDX-FileCopyrightText: 2021 Geoffrey Lentner
+# SPDX-License-Identifier: Apache-2.0
 
 """Create graphs based on log data."""
 
@@ -33,9 +26,9 @@ __all__ = ['LogRecord', 'LogData', 'PerfChart', ]
 
 
 # total memory in gigabytes
-total_memory = virtual_memory().total / 1024**3
-if total_memory == int(total_memory):
-    total_memory = int(total_memory)
+TOTAL_MEM = virtual_memory().total / 1024 ** 3
+if TOTAL_MEM != int(TOTAL_MEM):
+    TOTAL_MEM = int(TOTAL_MEM)
 
 
 @dataclass
@@ -62,10 +55,7 @@ class LogData:
 
     def __init__(self, records: Union[LogData, List[LogRecord]]) -> None:
         """Initialize directly with `data`."""
-        if isinstance(records, self.__class__):
-            self.records = records.records
-        else:
-            self.records = records
+        self.records = records if not isinstance(records, LogData) else records.records
 
     @property
     def records(self) -> List[LogRecord]:
@@ -79,7 +69,7 @@ class LogData:
         if all(isinstance(record, LogRecord) for record in __records):
             self.__records = __records
         else:
-            raise AttributeError(f'Expected LogData.records to be List[LogRecord]')
+            raise AttributeError(f'LogData.records expects List[LogRecord]')
 
     @classmethod
     def from_io(cls, stream: IO) -> LogData:
@@ -263,7 +253,7 @@ class PerfChart:
         mem_label_x = np.linspace(0.00, 0.05, 20)
         mem_label_y = 0.28 + 0.10 * np.random.rand(20)
         legend.plot(mem_label_x, mem_label_y, **mem_format)
-        legend.text(0.08, 0.28, f' Memory ({total_memory} GB)', fontsize=10, fontweight='semibold')
+        legend.text(0.08, 0.28, f' Memory ({TOTAL_MEM} GB)', fontsize=10, fontweight='semibold')
 
         legend.fill_between([0.45, 0.50], [0.56, 0.56], [0.80, 0.80], **fill_format)
         legend.text(0.52, 0.61, ' Run Period', fontsize=10, fontweight='semibold')

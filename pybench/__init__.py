@@ -1,12 +1,5 @@
-# This program is free software: you can redistribute it and/or modify it under the
-# terms of the Apache License (v2.0) as published by the Apache Software Foundation.
-#
-# This program is distributed in the hope that it will be useful, but WITHOUT ANY
-# WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
-# PARTICULAR PURPOSE. See the Apache License for more details.
-#
-# You should have received a copy of the Apache License along with this program.
-# If not, see <https://www.apache.org/licenses/LICENSE-2.0>.
+# SPDX-FileCopyrightText: 2021 Geoffrey Lentner
+# SPDX-License-Identifier: Apache-2.0
 
 """Package initialization and entry-point for console application."""
 
@@ -36,7 +29,7 @@ from .graph import LogRecord, LogData, PerfChart
 from . import benchmark
 
 # public interface
-__all__ = ['NPBenchApp', 'main', ]
+__all__ = ['PyBenchApp', 'main', ]
 
 
 # inject logger setup into command-line framework
@@ -270,7 +263,7 @@ Documentation and issue tracking at:
 """
 
 
-class NPBenchApp(ApplicationGroup):
+class PyBenchApp(ApplicationGroup):
     """Run benchmark."""
 
     interface = Interface('pybench', app_usage, app_help)
@@ -287,4 +280,4 @@ class NPBenchApp(ApplicationGroup):
 
 def main() -> int:
     """Entry-point for console application."""
-    return NPBenchApp.main(sys.argv[1:])
+    return PyBenchApp.main(sys.argv[1:])
