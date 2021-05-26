@@ -62,10 +62,7 @@ class LogData:
 
     def __init__(self, records: Union[LogData, List[LogRecord]]) -> None:
         """Initialize directly with `data`."""
-        if isinstance(records, self.__class__):
-            self.records = records.records
-        else:
-            self.records = records
+        self.records = records if not isinstance(records, LogData) else records.records
 
     @property
     def records(self) -> List[LogRecord]:
@@ -79,7 +76,7 @@ class LogData:
         if all(isinstance(record, LogRecord) for record in __records):
             self.__records = __records
         else:
-            raise AttributeError(f'Expected LogData.records to be List[LogRecord]')
+            raise AttributeError(f'LogData.records expects List[LogRecord]')
 
     @classmethod
     def from_io(cls, stream: IO) -> LogData:
