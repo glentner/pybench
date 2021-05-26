@@ -25,7 +25,8 @@ import numpy as np
 from .__meta__ import (__appname__, __version__, __authors__, __description__,
                        __contact__, __license__, __copyright__, __keywords__, __website__)
 from .core import CPUResource, MemoryResource, Benchmark, BenchmarkError, coerce_type
-from .graph import LogRecord, LogData, PerfChart
+from .graph import PerfChart
+from .logdata import LogRecord, LogData
 from . import benchmark
 
 # public interface
