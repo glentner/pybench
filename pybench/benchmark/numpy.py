@@ -86,3 +86,13 @@ class DotProduct(Benchmark):
 
     def task(self) -> None:
         np.dot(*self.arrays)
+
+class MatInv(Benchmark):
+    """Inverse matrices, 2D"""
+    
+    name = 'numpy.linalg.inv'
+    annotation = '(dtype: str, *shape: int)'
+    
+    def setup(self, dtype: str, *shape: int) -> None: 
+        pass
+    
