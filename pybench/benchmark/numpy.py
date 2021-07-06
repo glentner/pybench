@@ -111,5 +111,5 @@ class MatInv(Benchmark):
 
     def task(self) -> None:
         np.linalg.inv(*self.arrays) #ask
-                
+        
     
