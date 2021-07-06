@@ -15,7 +15,7 @@ import numpy as np
 from ..core import Benchmark, BenchmarkError
 
 # public interface
-__all__ = ['Random', 'MatMul', 'DotProduct', ]
+__all__ = ['Random', 'MatMul', 'DotProduct', 'MatInv']
 
 
 class Random(Benchmark):
@@ -93,6 +93,23 @@ class MatInv(Benchmark):
     name = 'numpy.linalg.inv'
     annotation = '(dtype: str, *shape: int)'
     
+    dtype: str = None
+    shape: List[int] = None
+    arrays: Tuple[np.ndarray, np.ndarray] = None
+    
     def setup(self, dtype: str, *shape: int) -> None: 
-        pass
+        try:
+            self.dtype = dtype
+            self.shape = list(map(int, shape))
+            if len(shape) == 2: #ask
+                self.arrays = None  # noqa: allow de-allocation
+                self.arrays = np.random.rand(*self.shape).astype(dtype), np.random.rand(*self.shape).astype(dtype)
+            else: 
+                raise BenchmarkError(f'expected 2D for \'{self.name}\', given {len(shape)}{shape}') #ask
+        except Exception as error:
+                raise BenchmarkError(f'args for \'{self.name}\': {error}') from error
+
+    def task(self) -> None:
+        np.linalg.inv(*self.arrays) #ask
+                
     
