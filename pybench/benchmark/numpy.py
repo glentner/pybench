@@ -89,7 +89,7 @@ class DotProduct(Benchmark):
 
 
 class MatInv(Benchmark):
-    """Inverse matrices, 2D"""
+    """Invert 2D matrix."""
 
     name = 'numpy.linalg.inv'
     annotation = '(dtype: str, *shape: int)'
