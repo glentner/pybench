@@ -30,7 +30,7 @@ class Random(Benchmark):
         try:
             self.shape = list(map(int, shape))
         except Exception as error:
-            raise BenchmarkError(f'args for \'{self.name}\': {error}') from error
+            raise BenchmarkError(f'Args for \'{self.name}\': {error}') from error
 
     def task(self) -> None:
         np.random.rand(*self.shape)
@@ -54,9 +54,9 @@ class MatMul(Benchmark):
                 self.arrays = None  # noqa: allow de-allocation
                 self.arrays = np.random.rand(*self.shape).astype(dtype), np.random.rand(*self.shape).astype(dtype)
             else:
-                raise BenchmarkError(f'expected 2D for \'{self.name}\', given {shape}')
+                raise BenchmarkError(f'Expected 2D for \'{self.name}\', given {shape}')
         except Exception as error:
-            raise BenchmarkError(f'args for \'{self.name}\': {error}') from error
+            raise BenchmarkError(f'Args for \'{self.name}\': {error}') from error
 
     def task(self) -> None:
         np.matmul(*self.arrays)
@@ -80,9 +80,9 @@ class DotProduct(Benchmark):
                 self.arrays = None  # noqa: allow de-allocation
                 self.arrays = np.random.rand(*self.shape).astype(dtype), np.random.rand(*self.shape).astype(dtype)
             else:
-                raise BenchmarkError(f'expected 1D or 2D for \'{self.name}\', given {len(shape)}{shape}')
+                raise BenchmarkError(f'Expected 1D or 2D for \'{self.name}\', given {len(shape)}{shape}')
         except Exception as error:
-            raise BenchmarkError(f'args for \'{self.name}\': {error}') from error
+            raise BenchmarkError(f'Args for \'{self.name}\': {error}') from error
 
     def task(self) -> None:
         np.dot(*self.arrays)
@@ -106,9 +106,9 @@ class MatInv(Benchmark):
                 self.array = None  # noqa: allow de-allocation
                 self.array = np.random.rand(*self.shape).astype(dtype)
             else:
-                raise BenchmarkError(f'expected 2D for \'{self.name}\', given {len(shape)}{shape}')
+                raise BenchmarkError(f'Expected 2D for \'{self.name}\', given {len(shape)}{shape}')
         except Exception as error:
-            raise BenchmarkError(f'args for \'{self.name}\': {error}') from error
+            raise BenchmarkError(f'Args for \'{self.name}\': {error}') from error
 
     def task(self) -> None:
         np.linalg.inv(self.array)
