@@ -90,23 +90,20 @@ class MatMul(Benchmark):
     """Matrix multiplication, 2D."""
 
     name = 'numpy.matmul'
-    annotation = '(dtype: str, *shape: int)'
+    annotation = '(dtype: str, size: int)'
 
     dtype: str
-    shape: List[int]
+    size: int
     arrays: Tuple[np.ndarray, np.ndarray]
     factory: Callable[[List[int]], np.ndarray]
 
-    def setup(self, dtype: str, *shape: int) -> None:
+    def setup(self, dtype: str, size: int) -> None:
         try:
             self.dtype = dtype
-            self.shape = list(map(int, shape))
+            self.size = int(size)
             self.factory = get_factory(self.dtype)
-            if len(shape) == 2:
-                self.arrays = None  # noqa: allow de-allocation
-                self.arrays = self.factory(self.shape), self.factory(self.shape)
-            else:
-                raise BenchmarkError(f'Expected 2D for \'{self.name}\', given {shape}')
+            self.arrays = None  # noqa: allow de-allocation
+            self.arrays = self.factory([self.size, self.size]), self.factory([self.size, self.size])
         except Exception as error:
             raise BenchmarkError(f'Args for \'{self.name}\': {error}') from error
 
@@ -118,23 +115,20 @@ class DotProduct(Benchmark):
     """Compute inner product, 1D or 2D."""
 
     name = 'numpy.dot'
-    annotation = '(dtype: str, *shape: int)'
+    annotation = '(dtype: str, size: int)'
 
     dtype: str
-    shape: List[int]
+    size: int
     arrays: Tuple[np.ndarray, np.ndarray]
     factory: Callable[[List[int]], np.ndarray]
 
-    def setup(self, dtype: str, *shape: int) -> None:
+    def setup(self, dtype: str, size: int) -> None:
         try:
             self.dtype = dtype
-            self.shape = list(map(int, shape))
+            self.size = int(size)
             self.factory = get_factory(self.dtype)
-            if len(shape) in (1, 2):
-                self.arrays = None  # noqa: allow de-allocation
-                self.arrays = self.factory(self.shape), self.factory(self.shape)
-            else:
-                raise BenchmarkError(f'Expected 1D or 2D for \'{self.name}\', given {len(shape)}{shape}')
+            self.arrays = None  # noqa: allow de-allocation
+            self.arrays = self.factory([self.size, self.size]), self.factory([self.size, self.size])
         except Exception as error:
             raise BenchmarkError(f'Args for \'{self.name}\': {error}') from error
 
@@ -146,23 +140,20 @@ class MatInv(Benchmark):
     """Invert 2D matrix."""
 
     name = 'numpy.linalg.inv'
-    annotation = '(dtype: str, *shape: int)'
+    annotation = '(dtype: str, size: int)'
 
     dtype: str
-    shape: List[int]
+    size: int
     array: np.ndarray
     factory: Callable[[List[int]], np.ndarray]
 
-    def setup(self, dtype: str, *shape: int) -> None:
+    def setup(self, dtype: str, size: int) -> None:
         try:
             self.dtype = dtype
-            self.shape = list(map(int, shape))
+            self.size = int(size)
             self.factory = get_factory(self.dtype)
-            if len(shape) == 2:
-                self.array = None  # noqa: allow de-allocation
-                self.array = self.factory(self.shape)
-            else:
-                raise BenchmarkError(f'Expected 2D for \'{self.name}\', given {len(shape)}{shape}')
+            self.array = None  # noqa: allow de-allocation
+            self.array = self.factory([self.size, self.size])
         except Exception as error:
             raise BenchmarkError(f'Args for \'{self.name}\': {error}') from error
 
