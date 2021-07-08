@@ -9,10 +9,10 @@ from typing import Dict, Type
 
 # internal libs
 from ..core import Benchmark
-from . import numpy
+from . import numpy, python
 
 # public interface
-__all__ = ['numpy', 'listing', ]
+__all__ = ['python', 'numpy', 'listing', ]
 
 
 def find_benchmarks(module) -> Dict[str, Type[Benchmark]]:
@@ -25,5 +25,6 @@ def find_benchmarks(module) -> Dict[str, Type[Benchmark]]:
 
 
 listing: Dict[str, Type[Benchmark]] = {
+    **find_benchmarks(python),
     **find_benchmarks(numpy),
 }
