@@ -18,7 +18,7 @@ with open('README.rst', mode='r') as readme:
 with open('pybench/__meta__.py', mode='r') as source:
     content = source.read().strip()
     metadata = {key: re.search(key + r'\s*=\s*[\'"]([^\'"]*)[\'"]', content).group(1)
-                for key in ['__version__', '__authors__', '__contact__', '__description__',
+                for key in ['__version__', '__developer__', '__contact__', '__description__',
                             '__license__', '__keywords__', '__website__']}
 
 
@@ -29,7 +29,7 @@ DEPS = ['cmdkit', 'psutil', 'numpy', 'scipy', 'pandas', 'matplotlib', 'seaborn',
 setup(
     name             = 'pybench',
     version          = metadata['__version__'],
-    author           = metadata['__authors__'],
+    author           = metadata['__developer__'],
     author_email     = metadata['__contact__'],
     description      = metadata['__description__'],
     license          = metadata['__license__'],
