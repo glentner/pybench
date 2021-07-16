@@ -9,7 +9,7 @@ from __future__ import annotations
 from typing import Tuple, List, Optional
 
 # standard libs
-import random
+import secrets
 from threading import Thread
 from queue import Queue
 
@@ -137,7 +137,7 @@ class QueueBenchmark(Benchmark):
         try:
             self.size = int(float(size))  # NOTE: permissive coercion (e.g., 1_000 or 1e9)
             self.count = int(float(count))
-            self.payload = random.randbytes(self.size)
+            self.payload = secrets.token_bytes(self.size)
             self.queue = Queue(maxsize=2*int(cons))
             self.consumers = [QueueConsumer(queue=self.queue) for _ in range(cons)]
             self.producers = [QueueProducer(count=self.count, payload=self.payload, queue=self.queue)
