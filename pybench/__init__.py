@@ -175,15 +175,19 @@ class RunApp(Application):
 
 graph_desc = "Graph benchmark log data."
 graph_usage = f"""\
-usage: pybench graph [-h] FILE [--output FILE]
+usage: pybench graph [-h] FILE [-o FILE] 
+                     [--label-benchmark TEXT] [--label-build TEXT] [--label-version TEXT]
 {graph_desc}\
 """
 graph_help = f"""\
 {graph_usage}
 
 options:
--o, --output  FILE       Path to save output file.
--h, --help               Show this message and exit.\
+-o, --output           FILE   Path to save output file.
+    --label-benchmark  TEXT   Label text for benchmark name.
+    --label-build      TEXT   Label text for build info.
+    --label-version    TEXT   Label text for version info.
+-h, --help                    Show this message and exit.\
 """
 
 
@@ -207,6 +211,9 @@ class GraphApp(Application):
     label_version: Optional[str] = None
     interface.add_argument('--label-version', default=label_version)
 
+    print_output: bool = False
+    interface.add_argument('--print', action='store_true', dest='print_output')
+
     data: LogData
     graph: PerfChart
 
@@ -214,8 +221,11 @@ class GraphApp(Application):
         """List benchmarks."""
         self.load_data()
         self.graph = PerfChart(self.data, **self.get_labels())
-        self.graph.draw()
-        self.graph.save(self.outpath)
+        if self.outpath:
+            self.graph.draw()
+            self.graph.save(self.outpath)
+        if self.print_output:
+            self.graph.print_stats()
 
     def load_data(self) -> None:
         """Load data from source."""

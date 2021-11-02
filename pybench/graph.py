@@ -121,6 +121,10 @@ class PerfChart:
         legend.fill_between([0.45, 0.50], [0.56, 0.56], [0.80, 0.80], **fill_format)
         legend.text(0.52, 0.61, ' Run Period', fontsize=10, fontweight='semibold')
 
+    def print_stats(self) -> None:
+        """Print timing data (mean and stddev)."""
+        print(f'{self.data.mean_time:.2f} ± {self.data.std_time:.2f} (seconds)')
+
     def save(self, *args, **kwargs) -> None:
         """Save figure to local file system."""
         self.figure.savefig(*args, **kwargs)
