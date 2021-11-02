@@ -211,6 +211,9 @@ class GraphApp(Application):
     label_version: Optional[str] = None
     interface.add_argument('--label-version', default=label_version)
 
+    print_output: bool = False
+    interface.add_argument('--print', action='store_true', dest='print_output')
+
     data: LogData
     graph: PerfChart
 
@@ -218,8 +221,11 @@ class GraphApp(Application):
         """List benchmarks."""
         self.load_data()
         self.graph = PerfChart(self.data, **self.get_labels())
-        self.graph.draw()
-        self.graph.save(self.outpath)
+        if self.outpath:
+            self.graph.draw()
+            self.graph.save(self.outpath)
+        if self.print_output:
+            self.graph.print_stats()
 
     def load_data(self) -> None:
         """Load data from source."""
