@@ -12,7 +12,6 @@ also included. Discover tasks with ``pybench list``.
 Run tasks by name and provide arguments. For example, to execute a large matrix multiplication
 task 30 times for ``float64`` precision for a given size:
 
-
 .. code-block::
 
     pybench run numpy.matmul float64 20000 --repeat 30 --spacing 10 --monitor-cpu --monitor-memory \

@@ -11,6 +11,7 @@ scipy = "*"
 pandas = "*"
 matplotlib = "*"
 seaborn = "*"
+tensorflow = ">=2.6.0"
 pybench = {editable = true, path = "."}
 
 [dev-packages]
