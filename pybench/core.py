@@ -57,7 +57,6 @@ class Benchmark(ABC):
         self.args = list(args)
         self.repeat = int(repeat)
         self.spacing = float(spacing)
-        self.prepare()
 
     @abstractproperty
     def name(self) -> str:
@@ -72,7 +71,7 @@ class Benchmark(ABC):
         try:
             self.setup(*self.args)
         except Exception as error:
-            raise BenchmarkError(f'setup for \'{self.name}\': {error}') from error
+            raise BenchmarkError(f'Setup for \'{self.name}\': {error}') from error
 
     @abstractmethod
     def task(self) -> None:
