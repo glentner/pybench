@@ -100,9 +100,9 @@ class ListApp(Application):
         print(f'{name} {benchmark_type.annotation:>27}   {benchmark_type.__doc__}')
 
 
-run_desc = "Run benchmark."
+run_desc = "Run Python benchmark, optionally gather telemetry."
 run_usage = f"""\
-usage: pybench run [-h] NAME [ARGS...] [-n COUNT] [-s SEC] [-cm] [-r SEC]
+usage: pybench run [-h] NAME [ARGS...] [-n COUNT] [-s SEC] [-cm [-r SEC]]
 {run_desc}\
 """
 run_help = f"""\
@@ -117,7 +117,7 @@ options:
 -s, --spacing     SEC    Time (seconds) between runs. (default: 1)
 -c, --monitor-cpu        Collect telemetry on CPU usage.
 -m, --monitor-memory     Collect telemetry on memory usage.
--r, --resolution  SEC    Time (seconds) between samples. (default: 1)
+-r, --resolution  SEC    Time (seconds) between telemetry samples (default: 1).
 -h, --help               Show this message and exit.\
 """
 
@@ -175,15 +175,17 @@ class RunApp(Application):
 
 graph_desc = "Graph benchmark log data."
 graph_usage = f"""\
-usage: pybench graph [-h] FILE [-o FILE] 
-                     [--label-benchmark TEXT] [--label-build TEXT] [--label-version TEXT]
-{graph_desc}\
+usage: pybench graph [-h] FILE [-o FILE] [--print]
+                     [--label-benchmark TEXT] [--label-build TEXT] [--label-version TEXT]\
 """
 graph_help = f"""\
 {graph_usage}
 
+{graph_desc}
+
 options:
 -o, --output           FILE   Path to save output file.
+    --print                   Print stats to standard output.
     --label-benchmark  TEXT   Label text for benchmark name.
     --label-build      TEXT   Label text for build info.
     --label-version    TEXT   Label text for version info.
