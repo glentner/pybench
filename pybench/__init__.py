@@ -175,7 +175,7 @@ class RunApp(Application):
 
 graph_desc = "Graph benchmark log data."
 graph_usage = f"""\
-usage: pybench graph [-h] FILE [-o FILE] 
+usage: pybench graph [-h] FILE [-o FILE] [--print]
                      [--label-benchmark TEXT] [--label-build TEXT] [--label-version TEXT]
 {graph_desc}\
 """
@@ -184,6 +184,7 @@ graph_help = f"""\
 
 options:
 -o, --output           FILE   Path to save output file.
+    --print                   Print stats to standard output.
     --label-benchmark  TEXT   Label text for benchmark name.
     --label-build      TEXT   Label text for build info.
     --label-version    TEXT   Label text for version info.
