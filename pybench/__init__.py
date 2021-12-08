@@ -39,8 +39,8 @@ Application.log_critical = log.critical
 Application.log_exception = log.exception
 
 
-def log_exception(exc: Exception, status: int) -> int:
-    """Print exception and return exit status."""
+def handle_exception(exc: Exception, status: int) -> int:
+    """Log exception and return exit status."""
     log.critical(f'error: {exc}')
     return status
 
@@ -152,7 +152,7 @@ class RunApp(Application):
     mem_thread: Optional[MemoryResource] = None
 
     exceptions = {
-        BenchmarkError: functools.partial(log_exception, status=exit_status.runtime_error)
+        BenchmarkError: functools.partial(handle_exception, status=exit_status.runtime_error)
     }
 
     def run(self) -> None:
