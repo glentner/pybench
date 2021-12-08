@@ -223,6 +223,10 @@ class GraphApp(Application):
     data: LogData
     graph: PerfChart
 
+    exceptions = {
+        LogData.Error: functools.partial(handle_exception, status=exit_status.runtime_error),
+    }
+
     def run(self) -> None:
         """List benchmarks."""
         self.data = self.load_data()
