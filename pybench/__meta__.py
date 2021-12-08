@@ -5,7 +5,7 @@
 
 
 __appname__     = 'pybench'
-__version__     = '0.3.1'
+__version__     = '0.3.2'
 __authors__     = ['Geoffrey Lentner <glentner@purdue.edu>',
                    'Joshua Park <park1118@purdue.edu']
 __developer__   = 'Geoffrey Lentner <glentner@purdue.edu>'
