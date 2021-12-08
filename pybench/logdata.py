@@ -153,3 +153,19 @@ class LogData:
     def std_time(self) -> float:
         """Standard deviation of time duration for benchmark runs."""
         return self.time_values.std()
+
+    class Error(Exception):
+        """Exception specific to LogData."""
+
+    def take(self, n: int) -> LogData:
+        """Take first `n` trials of data."""
+        records = []
+        count = 0
+        for record in self.records:
+            if record.topic.startswith('benchmark') and record.message.endswith('start'):
+                count += 1
+                if count > n:
+                    return LogData(records)
+            records.append(record)
+        else:
+            raise self.Error(f'Only found {count} trials in data')

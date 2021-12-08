@@ -173,9 +173,9 @@ class RunApp(Application):
         benchmark_type(self.repeat, self.spacing, *self.args).run()
 
 
-graph_desc = "Graph benchmark log data."
+graph_desc = "Graph benchmark data."
 graph_usage = f"""\
-usage: pybench graph [-h] FILE [-o FILE] [--print]
+usage: pybench graph [-h] FILE [-o FILE] [--print] [--take NUM]
                      [--label-benchmark TEXT] [--label-build TEXT] [--label-version TEXT]\
 """
 graph_help = f"""\
@@ -186,6 +186,7 @@ graph_help = f"""\
 options:
 -o, --output           FILE   Path to save output file.
     --print                   Print stats to standard output.
+-t, --take             NUM    Only graph limit number of samples.
     --label-benchmark  TEXT   Label text for benchmark name.
     --label-build      TEXT   Label text for build info.
     --label-version    TEXT   Label text for version info.
@@ -216,12 +217,17 @@ class GraphApp(Application):
     print_output: bool = False
     interface.add_argument('--print', action='store_true', dest='print_output')
 
+    sample_count: Optional[int] = None
+    interface.add_argument('-t', '--take', default=None, type=int, dest='sample_count')
+
     data: LogData
     graph: PerfChart
 
     def run(self) -> None:
         """List benchmarks."""
-        self.load_data()
+        self.data = self.load_data()
+        if self.sample_count is not None:
+            self.data = self.data.take(self.sample_count)
         self.graph = PerfChart(self.data, **self.get_labels())
         if self.outpath:
             self.graph.draw()
@@ -229,12 +235,12 @@ class GraphApp(Application):
         if self.print_output:
             self.graph.print_stats()
 
-    def load_data(self) -> None:
+    def load_data(self) -> LogData:
         """Load data from source."""
         if self.source == '-':
-            self.data = LogData.from_io(sys.stdin)
+            return LogData.from_io(sys.stdin)
         else:
-            self.data = LogData.from_local(self.source)
+            return LogData.from_local(self.source)
 
     def get_labels(self) -> Dict[str, str]:
         """Derive labels from data or from explicit assignment."""
