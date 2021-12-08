@@ -109,16 +109,16 @@ run_help = f"""\
 {run_usage}
 
 arguments:
-NAME                     Name of benchmark to run.
-ARGS...                  Positional arguments passed to benchmark.
+NAME                         Name of benchmark to run.
+ARGS...                      Positional arguments passed to benchmark.
 
 options:
--n, --repeat      COUNT  Number of times to run benchmark. (default: 1)
--s, --spacing     SEC    Time (seconds) between runs. (default: 1)
--c, --monitor-cpu        Collect telemetry on CPU usage.
--m, --monitor-memory     Collect telemetry on memory usage.
--r, --resolution  SEC    Time (seconds) between telemetry samples (default: 1).
--h, --help               Show this message and exit.\
+-n, --repeat          COUNT  Number of times to run benchmark (default: 1).
+-s, --spacing         SEC    Seconds between runs (default: 1).
+-c, --monitor-cpu            Collect telemetry on CPU usage.
+-m, --monitor-memory         Collect telemetry on memory usage.
+-r, --resolution      SEC    Seconds between telemetry samples (default: 1).
+-h, --help                   Show this message and exit.\
 """
 
 
